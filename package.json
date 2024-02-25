@@ -18,6 +18,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "18.17.1"
+  },
   "dependencies": {
     "class-validator": "0.14.1",
     "compression": "1.7.4",
