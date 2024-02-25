@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ steps.node_version.outputs.NODE_VERSION }}
       - name: Install packages
         run: npm ci
-      - name: Check types
+      - name: Build server
         run: npm run build
       - name: Running tests
         run: npm run test
