@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "diagnostics": true,
+    "removeComments": true,
+    "generateCpuProfile": "profile.cpuprofile",
+    "extendedDiagnostics": true
+  },
+  "exclude": [
+    "src/test/",
+    "src/**/*.test.ts"
+  ]
+}

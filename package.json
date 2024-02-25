@@ -1,0 +1,53 @@
+{
+  "name": "rinha-de-backend-2024",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "scripts": {
+    "build": "ENV=.env rimraf ./dist && tsc --project tsconfig.prod.json",
+    "dev": "ENV=.env tsc-watch --onSuccess \"node -r ./tsconfig.paths.js dist/index.js \" ",
+    "start": "ENV=.env node -r ./tsconfig.paths.js dist/index.js",
+    "test": "ENV=.env.test mocha -r ts-node/register -r tsconfig-paths/register --colors --delay src/index.ts --exit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "class-validator": "0.14.1",
+    "compression": "1.7.4",
+    "dotenv": "16.4.5",
+    "express": "4.18.2",
+    "helmet": "7.1.0",
+    "reflect-metadata": "0.2.1",
+    "routing-controllers": "0.10.4",
+    "sqlite3": "5.1.7",
+    "typedi": "0.10.0",
+    "winston": "3.11.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "8.4.1",
+    "@types/chai": "4.3.4",
+    "@types/compression": "1.7.5",
+    "@types/express": "4.17.21",
+    "@types/i18n": "0.13.10",
+    "@types/mocha": "10.0.6",
+    "@types/node": "20.11.20",
+    "@types/sqlite3": "3.1.11",
+    "axios": "1.6.7",
+    "chai": "4.4.1",
+    "glob": "10.3.10",
+    "mocha": "10.3.0",
+    "node-runner-ts": "0.5.0",
+    "rimraf": "5.0.5",
+    "ts-node": "10.9.2",
+    "tsc-watch": "6.0.4",
+    "tsconfig-paths": "4.2.0",
+    "typescript": "5.3.3"
+  }
+}
