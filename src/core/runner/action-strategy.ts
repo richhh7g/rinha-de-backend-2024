@@ -13,17 +13,17 @@ export const customActions = async (action: ActionType): Promise<void> => {
     case ActionType.Test:
       return Runner.parallelism(
         {
-          path: path.resolve(__dirname, "server.runner"),
+          path: path.resolve(__dirname, "..", "..", "server.runner"),
           forever: true,
         },
         {
-          path: path.resolve(__dirname, "test", "test.runner"),
+          path: path.resolve(__dirname, "..", "..", "test", "test.runner"),
           forever: true,
         }
       );
     case ActionType.Server:
       return Runner.exec({
-        path: path.resolve(__dirname, "server.runner"),
+        path: path.resolve(__dirname, "..", "..", "server.runner"),
         forever: true,
       });
     default:
