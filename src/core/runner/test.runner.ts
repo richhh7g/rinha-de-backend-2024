@@ -1,7 +1,7 @@
 import { RunnerType } from "node-runner-ts";
 import Container, { Service } from "typedi";
 import mocha from "mocha";
-import { TestConfig } from "./test.config";
+import { TestConfig } from "@core/server-config";
 
 @Service()
 export default class TestRunner implements RunnerType {

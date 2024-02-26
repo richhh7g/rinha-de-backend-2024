@@ -20,10 +20,24 @@ export class ExpressConfig implements ConfigureType {
     useExpressServer(app, {
       defaultErrorHandler: false,
       controllers: [
-        join(__dirname, "..", "..", "controller", "*.controller.{ts,js}"),
+        join(
+          __dirname,
+          "..",
+          "..",
+          "api",
+          "controller",
+          "*.controller.{ts,js}"
+        ),
       ],
       middlewares: [
-        join(__dirname, "..", "..", "middleware", "*.middleware.{ts,js}"),
+        join(
+          __dirname,
+          "..",
+          "..",
+          "api",
+          "middleware",
+          "*.middleware.{ts,js}"
+        ),
       ],
       validation: true,
     });

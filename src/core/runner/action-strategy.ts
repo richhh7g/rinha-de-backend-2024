@@ -1,7 +1,7 @@
 import { Runner } from "node-runner-ts";
 import path from "path";
 import { exit } from "process";
-import { IS_SERVER, IS_TEST } from "@app/config";
+import { IS_SERVER, IS_TEST } from "@core/util";
 
 export enum ActionType {
   Test = "Test",
@@ -13,17 +13,17 @@ export const customActions = async (action: ActionType): Promise<void> => {
     case ActionType.Test:
       return Runner.parallelism(
         {
-          path: path.resolve(__dirname, "..", "..", "server.runner"),
+          path: path.resolve(__dirname, "server.runner"),
           forever: true,
         },
         {
-          path: path.resolve(__dirname, "..", "..", "test", "test.runner"),
+          path: path.resolve(__dirname, "test.runner"),
           forever: true,
         }
       );
     case ActionType.Server:
       return Runner.exec({
-        path: path.resolve(__dirname, "..", "..", "server.runner"),
+        path: path.resolve(__dirname, "server.runner"),
         forever: true,
       });
     default:
