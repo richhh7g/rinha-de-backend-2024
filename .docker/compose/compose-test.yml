@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  service-01: &service
+    build:
+      context: ../../
+      dockerfile: .docker/config/server.dockerfile
+    environment:
+      - APP_PORT=3000
+    expose:
+      - "3000:3000"
+    hostname: service-01
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "200MB"
+  service-02:
+    <<: *service
+    hostname: service-02
+  load-balancer:
+    image: haproxy:alpine
+    ports:
+      - "9999:9999"
+    volumes:
+      - ../config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - service-01
+      - service-02
+    hostname: load-balancer
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: "100MB"
+networks:
+  default:
+    driver: bridge
