@@ -2,7 +2,7 @@ import e from "express";
 import { RunnerType } from "node-runner-ts";
 import { getServers } from "node:dns";
 import Container, { Service } from "typedi";
-import { ServerConfig } from "@app/config";
+import { ServerConfig } from "@core/server-config";
 
 @Service()
 export default class ServerRunner implements RunnerType {

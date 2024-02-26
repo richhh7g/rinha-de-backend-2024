@@ -1,7 +1,7 @@
 import { ConfigureType } from "node-runner-ts";
 import Container, { Service } from "typedi";
 import { ExpressConfig } from "@core/server-config";
-import { ServerIOC } from "./server.ioc";
+import { ServerIOC } from "@core/ioc";
 
 @Service()
 export class ServerConfig implements ConfigureType {
