@@ -8,7 +8,7 @@ export const ENV_FILE = process.env.ENV as string;
 @Service()
 export class EnvConfig implements ConfigureType {
   async configure() {
-    const envFilePath = path.resolve(__dirname, "..", "..", ENV_FILE);
+    const envFilePath = path.resolve(__dirname, "..", "..", "..", ENV_FILE);
 
     config({
       path: envFilePath,
