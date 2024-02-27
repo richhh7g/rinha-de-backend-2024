@@ -1,11 +1,10 @@
-import { useContainer } from "class-validator";
 import compression from "compression";
 import express, { Express } from "express";
 import helmet from "helmet";
 import { ConfigureType } from "node-runner-ts";
 import { join } from "path";
 import { useExpressServer } from "routing-controllers";
-import Container, { Service } from "typedi";
+import { Service } from "typedi";
 
 @Service()
 export class ExpressConfig implements ConfigureType {
@@ -16,8 +15,8 @@ export class ExpressConfig implements ConfigureType {
     app.use(compression());
     app.use(helmet());
 
-    useContainer(Container);
     useExpressServer(app, {
+      validation: true,
       defaultErrorHandler: false,
       controllers: [
         join(
@@ -39,7 +38,6 @@ export class ExpressConfig implements ConfigureType {
           "*.middleware.{ts,js}"
         ),
       ],
-      validation: true,
     });
 
     return Promise.resolve(app);
