@@ -14,7 +14,7 @@
     "dev": "ENV=.env tsc-watch --onSuccess \"node -r ./tsconfig.paths.js dist/index.js \" ",
     "start": "ENV=.env node -r ./tsconfig.paths.js dist/index.js",
     "test": "ENV=.env.test mocha -r ts-node/register -r tsconfig-paths/register --colors --delay src/index.ts --exit",
-    "compose:test": "docker compose -f .docker/compose/compose-test.yml up",
+    "compose:test": "docker compose -f .docker/compose/compose-test.yml up --build --force-recreate",
     "docker:stats": "docker stats"
   },
   "keywords": [],
@@ -32,6 +32,7 @@
     "node-runner-ts": "0.5.0",
     "reflect-metadata": "0.2.1",
     "routing-controllers": "0.10.4",
+    "sqlite": "5.1.1",
     "sqlite3": "5.1.7",
     "tsconfig-paths": "4.2.0",
     "typedi": "0.10.0",
