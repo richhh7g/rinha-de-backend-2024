@@ -10,10 +10,11 @@
     "x64"
   ],
   "scripts": {
-    "build": "ENV=.env rimraf ./dist && tsc --project tsconfig.prod.json",
+    "build": "ENV=.env rimraf ./dist && tsc --project tsconfig.prod.json && npm run copy-sql-files",
     "dev": "ENV=.env tsc-watch --onSuccess \"node -r ./tsconfig.paths.js dist/index.js \" ",
     "start": "ENV=.env node -r ./tsconfig.paths.js dist/index.js",
     "test": "ENV=.env.test mocha -r ts-node/register -r tsconfig-paths/register --colors --delay src/index.ts --exit",
+    "copy-sql-files": "copyup 'src/core/db/sql/**' 'src/api/repository/sql/**' 'dist/'",
     "compose:test": "docker compose -f .docker/compose/compose-test.yml up --build --force-recreate",
     "docker:stats": "docker stats"
   },
@@ -49,6 +50,7 @@
     "@types/sqlite3": "3.1.11",
     "axios": "1.6.7",
     "chai": "4.4.1",
+    "copyfiles": "2.4.1",
     "glob": "10.3.10",
     "mocha": "10.3.0",
     "rimraf": "5.0.5",
