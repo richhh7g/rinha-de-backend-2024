@@ -9,10 +9,6 @@ interface CreateTransactionParams {
   description: string;
 }
 
-const REPOSITORY_PATH = {
-  isRepositoryPath: true,
-};
-
 @Service()
 export class TransactionRepository {
   constructor(private readonly database: DatabaseManager) {}
@@ -20,7 +16,7 @@ export class TransactionRepository {
   findTransactionById(id: number) {
     const query = DatabaseManager.loadQuery(
       "find-transaction-by-id.query.sql",
-      REPOSITORY_PATH
+      "repository"
     );
 
     return this.database.query<TransactionEntity>(query, [id]);
@@ -29,7 +25,7 @@ export class TransactionRepository {
   async createTransaction(params: CreateTransactionParams) {
     const createTransactionQuery = DatabaseManager.loadQuery(
       "create-transaction.query.sql",
-      REPOSITORY_PATH
+      "repository"
     );
 
     const createdAt = Date.now();

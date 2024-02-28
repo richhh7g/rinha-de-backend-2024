@@ -57,4 +57,3 @@ BEGIN
     WHERE 
         customer_id = NEW.customer_id;
 END;
-

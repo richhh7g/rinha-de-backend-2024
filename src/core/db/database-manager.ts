@@ -1,26 +1,25 @@
 import * as sqlite3 from "sqlite3";
 import { readFileSync } from "fs";
-import { DataSourceError } from "@core/error";
 import { Service } from "typedi";
+import path from "path";
+import { DataSourceError } from "@core/error";
+import { API_PATH, BASE_PATH, CORE_PATH } from "@core/util";
 
-type LoadQueryParams = {
-  isRepositoryPath: boolean;
-};
+type SourceType = "main" | "core" | "repository";
 
 @Service()
 export class DatabaseManager {
   public db: sqlite3.Database | null = null;
 
-  static loadQuery(filePath: string, params?: LoadQueryParams): string {
+  static loadQuery(filePath: string, source: SourceType): string {
     try {
-      const paths = {
-        repository: "src/api/repository/sql/" + filePath,
+      const sqlPaths = {
+        main: path.resolve(BASE_PATH, filePath),
+        core: path.resolve(CORE_PATH, "db", "sql", filePath),
+        repository: path.resolve(API_PATH, "repository", "sql", filePath),
       };
 
-      return readFileSync(
-        params?.isRepositoryPath ? paths.repository : filePath,
-        "utf-8"
-      );
+      return readFileSync(sqlPaths[source ?? "main"], "utf-8");
     } catch (err) {
       throw new DataSourceError("Erro ao carregar consulta SQL do arquivo.");
     }
@@ -44,7 +43,10 @@ export class DatabaseManager {
 
     const isInitialized = await this.checkInitialization();
     if (!isInitialized) {
-      const initSql = DatabaseManager.loadQuery(".docker/asset/init.sql");
+      const initSql = DatabaseManager.loadQuery(
+        "initialize-database.query.sql",
+        "core"
+      );
       this.db.exec(initSql);
     }
   }
@@ -52,7 +54,8 @@ export class DatabaseManager {
   private async checkInitialization(): Promise<boolean> {
     try {
       const query = DatabaseManager.loadQuery(
-        "src/core/db/sql/check-initialization.query.sql"
+        "check-initialization.query.sql",
+        "core"
       );
 
       return new Promise<boolean>((resolve, reject) => {

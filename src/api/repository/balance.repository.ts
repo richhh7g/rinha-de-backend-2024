@@ -11,9 +11,10 @@ export class BalanceRepository {
   constructor(private readonly database: DatabaseManager) {}
 
   findCustomerBalance(params: FindCustomerBalanceParams) {
-    const query = DatabaseManager.loadQuery("find-customer-balance.query.sql", {
-      isRepositoryPath: true,
-    });
+    const query = DatabaseManager.loadQuery(
+      "find-customer-balance.query.sql",
+      "repository"
+    );
 
     return this.database.query<BalanceEntity>(query, [params.customerId]);
   }
