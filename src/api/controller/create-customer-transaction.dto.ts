@@ -11,7 +11,7 @@ export class CreateCustomerTransactionBodyDTO {
   @IsIn(Object.keys(TransactionTypeShort).map((type) => type.toLowerCase()))
   @Length(1, 1)
   @IsString()
-  readonly tipo: TransactionTypeShort;
+  readonly tipo: string;
 
   @Length(1, 10)
   @IsString()

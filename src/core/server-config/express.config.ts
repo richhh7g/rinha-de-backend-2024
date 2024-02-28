@@ -17,7 +17,7 @@ export class ExpressConfig implements ConfigureType {
 
     useExpressServer(app, {
       validation: true,
-      defaultErrorHandler: false,
+      defaultErrorHandler: true,
       controllers: [
         join(
           __dirname,
