@@ -42,10 +42,19 @@ INSERT INTO balances VALUES(5,   500000, 0)  ON CONFLICT (customer_id) DO NOTHIN
 CREATE TRIGGER IF NOT EXISTS `update_customer_balance_after_transaction` AFTER INSERT ON `transactions`
 BEGIN
     UPDATE balances SET
-        amount = CASE
-            WHEN NEW.type = 'd' THEN balances.amount - NEW.amount
-            WHEN NEW.type = 'c' THEN balances.amount + NEW.amount
-            ELSE balances.amount
-        END
-    WHERE balances.customer_id = NEW.customer_id;
+        amount = (
+            SELECT 
+                COALESCE(SUM(CASE 
+                                    WHEN type = 'c' THEN amount 
+                                    WHEN type = 'd' THEN -amount 
+                                    ELSE 0 
+                                END), 0)
+            FROM 
+                transactions
+            WHERE 
+                customer_id = NEW.customer_id
+        )
+    WHERE 
+        customer_id = NEW.customer_id;
 END;
+
