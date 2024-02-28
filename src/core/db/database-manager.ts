@@ -1,5 +1,4 @@
 import * as sqlite3 from "sqlite3";
-import { open, Database } from "sqlite";
 import { readFileSync } from "fs";
 import { DataSourceError } from "@core/error";
 import { Service } from "typedi";
@@ -10,9 +9,7 @@ type LoadQueryParams = {
 
 @Service()
 export class DatabaseManager {
-  private db: Database | null = null;
-
-  constructor() {}
+  public db: sqlite3.Database | null = null;
 
   static loadQuery(filePath: string, params?: LoadQueryParams): string {
     try {
@@ -30,15 +27,25 @@ export class DatabaseManager {
   }
 
   async connect(databasePath: string): Promise<void> {
-    this.db = await open({
-      filename: databasePath,
-      driver: sqlite3.Database,
+    this.db = sqlite3.cached.Database(
+      databasePath,
+      sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE | sqlite3.OPEN_SHAREDCACHE
+    );
+
+    this.db.configure("busyTimeout", 5);
+
+    this.db.on("open", () => {
+      console.log("Banco de dados SQLite aberto com sucesso.");
+    });
+
+    this.db.on("error", (err) => {
+      console.error("Erro no banco de dados SQLite:", err.message);
     });
 
     const isInitialized = await this.checkInitialization();
     if (!isInitialized) {
       const initSql = DatabaseManager.loadQuery(".docker/asset/init.sql");
-      await this.db.exec(initSql);
+      this.db.exec(initSql);
     }
   }
 
@@ -48,9 +55,22 @@ export class DatabaseManager {
         "src/core/db/sql/check-initialization.query.sql"
       );
 
-      const result = await this.db?.get<{ name: string }>(query);
+      return new Promise<boolean>((resolve, reject) => {
+        if (!this.db) {
+          reject(new DataSourceError("Database is not connected."));
+          return;
+        }
 
-      return result?.name === "customers";
+        this.db.get<{ name: string }>(query, (err, row) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          const result = row?.name === "customers";
+          resolve(result);
+        });
+      });
     } catch (err) {
       throw new DataSourceError(
         "Erro ao verificar a inicialização do banco de dados."
@@ -60,7 +80,15 @@ export class DatabaseManager {
 
   async disconnect(): Promise<void> {
     if (this.db) {
-      await this.db.close();
+      this.db.close((err) => {
+        if (err) {
+          console.error("Erro ao fechar o banco de dados SQLite:", err.message);
+          return;
+        }
+
+        console.log("Banco de dados SQLite fechado com sucesso.");
+      });
+
       this.db = null;
     }
   }
@@ -70,22 +98,36 @@ export class DatabaseManager {
       throw new DataSourceError("Database is not connected.");
     }
 
-    const results = await this.db.all(sql, params);
+    return new Promise<T | null>((resolve, reject) => {
+      this.db?.all<T>(sql, params, (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-    if (Array.isArray(results) && results.length > 1) {
-      return results as T;
-    }
-
-    const result = results.find((result) => !!result);
-
-    return result ? (result as T) : null;
+        if (rows && rows.length > 0) {
+          resolve(rows.length === 1 ? (rows[0] as T) : (rows as T));
+        } else {
+          resolve(null);
+        }
+      });
+    });
   }
 
   async execute(sql: string, params?: any[]): Promise<void> {
-    if (!this.db) {
-      throw new DataSourceError("Database is not connected.");
-    }
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        reject(new DataSourceError("Database is not connected."));
+        return;
+      }
 
-    await this.db.run(sql, params);
+      this.db.run(sql, params, function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }

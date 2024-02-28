@@ -1,7 +1,1 @@
-SELECT
-  name
-FROM
-  sqlite_master
-WHERE
-  type = "table"
-  AND name = "customers"
+SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'customers';
