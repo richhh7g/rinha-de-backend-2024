@@ -19,10 +19,3 @@ export interface TransactionModel {
   customerId: number;
   description: string;
 }
-
-export interface CreateTransactionServiceInputModel {
-  type: string;
-  amount: number;
-  customerId: number;
-  description: string;
-}

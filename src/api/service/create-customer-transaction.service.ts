@@ -5,12 +5,12 @@ import {
   TransactionTypeShort,
 } from "@api/model";
 import { UnprocessableError } from "@app/core/error";
+import { TransactionRepository } from "@api/repository";
 import { GetCustomerService } from "./get-customer.service";
 import { GetCustomerBalanceService } from "./get-customer-balance.service";
-import { TransactionRepository } from "@api/repository";
 
 @Service()
-export class ListCustomerTransactionsService {
+export class CreateCustomerTransactionService {
   constructor(
     private readonly getCustomerService: GetCustomerService,
     private readonly getCustomerBalanceService: GetCustomerBalanceService,

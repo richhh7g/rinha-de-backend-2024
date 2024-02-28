@@ -1,7 +1,7 @@
 import { Body, JsonController, Param, Post } from "routing-controllers";
 import { Service } from "typedi";
 import { TransactionTypeShort } from "@api/model";
-import { ListCustomerTransactionsService } from "@api/service";
+import { CreateCustomerTransactionService } from "@api/service";
 import {
   CreateCustomerTransactionBodyDTO,
   CreateCustomerTransactionResponseDTO,
@@ -12,7 +12,7 @@ import {
 @JsonController("/clientes/:id")
 export class CustomerTransactionController {
   constructor(
-    private readonly listCustomerTransactionsService: ListCustomerTransactionsService
+    private readonly createCustomerTransactionService: CreateCustomerTransactionService
   ) {}
 
   @Post("/transacoes")
@@ -21,12 +21,14 @@ export class CustomerTransactionController {
     @Param("id") customerId: number,
     @Body() body: CreateCustomerTransactionBodyDTO
   ): Promise<CreateCustomerTransactionResponseDTO> {
-    const { limit, balance } = await this.listCustomerTransactionsService.exec({
-      customerId,
-      type: TransactionTypeShort[body.tipo.toUpperCase()],
-      amount: body.valor,
-      description: body.descricao,
-    });
+    const { limit, balance } = await this.createCustomerTransactionService.exec(
+      {
+        customerId,
+        type: TransactionTypeShort[body.tipo.toUpperCase()],
+        amount: body.valor,
+        description: body.descricao,
+      }
+    );
 
     return {
       saldo: balance,
