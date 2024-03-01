@@ -1,3 +1,3 @@
 export interface DependencyRegister {
-  register(): void;
+  register(): Promise<void>;
 }
