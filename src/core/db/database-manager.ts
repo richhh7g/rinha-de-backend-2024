@@ -96,13 +96,13 @@ export class DatabaseManager {
     }
   }
 
-  async query<T = any>(sql: string, params?: any[]): Promise<T | null> {
+  async query<T = any>(sql: string, ...params: any[]): Promise<T | null> {
     if (!this.db) {
       throw new DataSourceError("Database is not connected.");
     }
 
     return new Promise<T | null>((resolve, reject) => {
-      this.db?.all<T>(sql, params, (err, rows) => {
+      this.db?.all<T>(sql, ...params, (err: any, rows: any) => {
         if (err) {
           reject(err);
           return;
