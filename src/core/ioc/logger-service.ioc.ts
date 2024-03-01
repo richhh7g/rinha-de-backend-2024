@@ -1,7 +1,7 @@
 import Container, { Service, Token } from "typedi";
 import { createLogger, format, transports } from "winston";
+import { LoggingDriver } from "@core/log";
 import { DependencyRegister } from "@core/ioc";
-import { LoggingDriver } from "./logger-service.type";
 
 export const LOGGER_DRIVER_TOKEN = new Token<LoggingDriver>(
   "LOGGER_DRIVER_TOKEN"
