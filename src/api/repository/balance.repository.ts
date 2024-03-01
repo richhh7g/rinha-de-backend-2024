@@ -3,6 +3,8 @@ import { DatabaseManager } from "@app/core/db";
 import { BalanceEntity } from "@api/entity";
 
 interface FindCustomerBalanceParams {
+  type: string;
+  amount: number;
   customerId: number;
 }
 
@@ -16,6 +18,10 @@ export class BalanceRepository {
       "repository"
     );
 
-    return this.database.query<BalanceEntity>(query, [params.customerId]);
+    return this.database.query<BalanceEntity>(query, [
+      params.customerId,
+      params.type,
+      params.amount,
+    ]);
   }
 }

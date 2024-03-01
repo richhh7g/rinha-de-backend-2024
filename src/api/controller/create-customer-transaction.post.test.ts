@@ -11,7 +11,7 @@ import {
 } from "@test";
 import { DatabaseManager } from "@core/db";
 import { BalanceEntity } from "@api/entity";
-import { StatusCode } from "@app/core/error";
+import { StatusCode, UnprocessableError } from "@app/core/error";
 import {
   CreateCustomerTransactionResponseDTO,
   CreateCustomerTransactionBodyDTO,
@@ -29,7 +29,7 @@ describe("REST - CustomerTransactionController - createCustomerTransaction(POST)
   >("/customers");
   const testDbManager: TestDatabaseManager = Container.get(TestDatabaseManager);
 
-  before(async () => {
+  beforeEach(async () => {
     await testDbManager.resetDatabase();
   });
 
@@ -53,22 +53,44 @@ describe("REST - CustomerTransactionController - createCustomerTransaction(POST)
     });
   });
 
-  it("should return a valid credit transaction", async () => {
+  it("should return error in invalid debit transaction", async () => {
     const customerId = 1;
+    const input = {
+      valor: 100001,
+      tipo: "d",
+      descricao: "descricao",
+    };
+
+    const response = await requestMaker.request<ResponseError>({
+      url: `/${customerId}/transactions`,
+      method: "POST",
+      body: input,
+    });
+
+    isDefined(response);
+    checkError(response, {
+      name: UnprocessableError.name,
+      code: StatusCode.Unprocessable,
+    });
+  });
+
+  it("should return a valid debit transaction", async () => {
+    const customerId = 1;
+    const input = {
+      valor: 1000,
+      tipo: "c",
+      descricao: "descricao",
+    };
 
     const response = await requestMaker.request({
       url: `/${customerId}/transactions`,
       method: "POST",
-      body: {
-        valor: 1000,
-        tipo: "c",
-        descricao: "descricao",
-      },
+      body: input,
     });
 
     const atualBalance = await testDbManager.query<BalanceEntity>(
       getCustomerBalanceSQL,
-      [customerId]
+      [customerId, input.tipo, input.valor]
     );
 
     isDefined(atualBalance);
@@ -76,22 +98,23 @@ describe("REST - CustomerTransactionController - createCustomerTransaction(POST)
     checkBalance(response, atualBalance);
   });
 
-  it("should return a valid debit transaction", async () => {
+  it("should return a valid credit transaction", async () => {
     const customerId = 1;
+    const input = {
+      valor: 1000,
+      tipo: "c",
+      descricao: "descricao",
+    };
 
     const response = await requestMaker.request({
       url: `/${customerId}/transactions`,
       method: "POST",
-      body: {
-        valor: 1000,
-        tipo: "d",
-        descricao: "descricao",
-      },
+      body: input,
     });
 
     const atualBalance = await testDbManager.query<BalanceEntity>(
       getCustomerBalanceSQL,
-      [customerId]
+      [customerId, input.tipo, input.valor]
     );
 
     isDefined(atualBalance);

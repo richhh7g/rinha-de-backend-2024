@@ -16,3 +16,9 @@ export interface CreateCustomerTransactionServiceModel {
   limit: number;
   balance: number;
 }
+
+export interface GetCustomerBalanceServiceInputModel {
+  amount: number;
+  type: string;
+  customerId: number;
+}

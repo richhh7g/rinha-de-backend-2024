@@ -4,7 +4,6 @@ import {
   CreateCustomerTransactionServiceModel,
   TransactionTypeShort,
 } from "@api/model";
-import { UnprocessableError } from "@app/core/error";
 import { TransactionRepository } from "@api/repository";
 import { GetCustomerService } from "./get-customer.service";
 import { GetCustomerBalanceService } from "./get-customer-balance.service";
@@ -20,27 +19,27 @@ export class CreateCustomerTransactionService {
   async exec(
     input: CreateCustomerTransactionInputModel
   ): Promise<CreateCustomerTransactionServiceModel> {
-    const { customerId, type, amount, description } = input;
+    const { customerId, amount, description } = input;
+    const type = TransactionTypeShort[input.type].toLowerCase();
 
     const customer = await this.getCustomerService.exec(customerId);
-    const atualBalance = await this.getCustomerBalanceService.exec(customer.id);
 
-    const isInvalidDebitTransaction =
-      TransactionTypeShort.Debit === TransactionTypeShort[type] &&
-      atualBalance.amount - amount < -atualBalance.limit;
+    const commonBalance = {
+      type,
+      amount,
+      customerId: customer.id,
+    };
 
-    if (isInvalidDebitTransaction) {
-      throw new UnprocessableError();
-    }
+    await this.getCustomerBalanceService.exec(commonBalance);
 
     await this.transactionRepository.createTransaction({
-      type: TransactionTypeShort[type].toLowerCase(),
+      type,
       amount,
       customerId,
       description,
     });
 
-    const balance = await this.getCustomerBalanceService.exec(customer.id);
+    const balance = await this.getCustomerBalanceService.exec(commonBalance);
 
     return {
       limit: balance.limit,
