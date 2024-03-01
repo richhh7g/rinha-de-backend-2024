@@ -4,7 +4,6 @@ import {
   CreateCustomerTransactionServiceModel,
   TransactionTypeShort,
 } from "@api/model";
-import { UnprocessableError } from "@app/core/error";
 import { TransactionRepository } from "@api/repository";
 import { GetCustomerService } from "./get-customer.service";
 import { GetCustomerBalanceService } from "./get-customer-balance.service";
@@ -31,12 +30,7 @@ export class CreateCustomerTransactionService {
       customerId: customer.id,
     };
 
-    const atualBalance = await this.getCustomerBalanceService.exec(
-      commonBalance
-    );
-    if (!atualBalance) {
-      throw new UnprocessableError();
-    }
+    await this.getCustomerBalanceService.exec(commonBalance);
 
     await this.transactionRepository.createTransaction({
       type,

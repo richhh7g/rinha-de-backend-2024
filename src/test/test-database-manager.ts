@@ -7,16 +7,11 @@ export class TestDatabaseManager {
 
   async resetDatabase(): Promise<void> {
     const resetQuery = DatabaseManager.loadQuery(
-      "reset-database.query.sql",
-      "core"
-    );
-    const initializeDatabaseQuery = DatabaseManager.loadQuery(
-      "initialize-database.query.sql",
+      "reset-transactions-table.query.sql",
       "core"
     );
 
     await this.dbManager.execute(resetQuery);
-    await this.dbManager.execute(initializeDatabaseQuery);
   }
 
   async execute(sql: string, params?: any[]): Promise<void> {

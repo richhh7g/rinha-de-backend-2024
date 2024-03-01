@@ -1,7 +1,7 @@
 import { Service } from "typedi";
-import { NotFoundError } from "routing-controllers";
 import { BalanceModel, GetCustomerBalanceServiceInputModel } from "@api/model";
 import { BalanceRepository } from "@api/repository";
+import { UnprocessableError } from "@app/core/error";
 
 @Service()
 export class GetCustomerBalanceService {
@@ -12,7 +12,7 @@ export class GetCustomerBalanceService {
   ): Promise<BalanceModel> {
     const balance = await this.repository.findCustomerBalance(input);
     if (!balance) {
-      throw new NotFoundError();
+      throw new UnprocessableError();
     }
 
     return {
