@@ -5,17 +5,21 @@ export enum TransactionTypeShort {
   Credit = "C",
 }
 
-export interface BalanceModel {
-  limit: number;
-  amount: number;
-  customerId: number;
-}
-
-export interface TransactionModel {
+export interface TransactionBaseModel {
   id: number;
   type: string;
   amount: number;
   createdAt: number;
   customerId: number;
   description: string;
+}
+
+export interface BalanceBaseModel {
+  limit: number;
+  amount: number;
+  customerId: number;
+}
+
+export interface CustomerTransactionsModel extends BalanceBaseModel {
+  transactions: TransactionBaseModel[];
 }
