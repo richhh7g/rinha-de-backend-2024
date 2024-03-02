@@ -1,7 +1,7 @@
 import { ConfigureType } from "node-runner-ts";
 import Container, { Service } from "typedi";
 import { DatabaseManager } from "@core/db";
-import { IS_SERVER } from "@core/util";
+import { BASE_PATH, IS_SERVER } from "@core/util";
 
 @Service()
 export class DatabaseConfig implements ConfigureType {
@@ -10,7 +10,9 @@ export class DatabaseConfig implements ConfigureType {
 
     const commonPath = ".docker/asset/";
     await db.connect(
-      IS_SERVER ? commonPath + "database.db" : commonPath + "test-database.db"
+      IS_SERVER
+        ? commonPath + "database.db"
+        : BASE_PATH + "/test/test-database.db"
     );
   }
 }
