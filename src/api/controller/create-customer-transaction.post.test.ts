@@ -35,15 +35,16 @@ describe("REST - CustomerTransactionController - createCustomerTransaction(POST)
 
   it("should throw an error if customer does not exist", async () => {
     const customerId = 6;
+    const input = {
+      valor: 1000,
+      tipo: "c",
+      descricao: "descricao",
+    };
 
     const response = await requestMaker.request<ResponseError>({
       url: `/${customerId}/transactions`,
       method: "POST",
-      body: {
-        valor: 1000,
-        tipo: "c",
-        descricao: "descricao",
-      },
+      body: input,
     });
 
     isDefined(response);

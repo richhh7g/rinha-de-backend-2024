@@ -1,4 +1,7 @@
 PRAGMA foreign_keys = ON;
+PRAGMA journal_mode = WAL;
+PRAGMA synchronous = normal;
+PRAGMA journal_size_limit = 6144000;
 
 CREATE TABLE IF NOT EXISTS customers
 (

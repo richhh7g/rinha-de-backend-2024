@@ -1,6 +1,6 @@
 import { Service } from "typedi";
-import { DatabaseManager } from "@app/core/db";
 import { CustomerEntity } from "@api/entity";
+import { DatabaseManager } from "@app/core/db";
 
 interface FindCustomerByIdParams {
   id: number;

@@ -1,5 +1,8 @@
 import { Service } from "typedi";
-import { BalanceModel, GetCustomerBalanceServiceInputModel } from "@api/model";
+import {
+  BalanceBaseModel,
+  GetCustomerBalanceServiceInputModel,
+} from "@api/model";
 import { BalanceRepository } from "@api/repository";
 import { UnprocessableError } from "@app/core/error";
 
@@ -9,7 +12,7 @@ export class GetCustomerBalanceService {
 
   async exec(
     input: GetCustomerBalanceServiceInputModel
-  ): Promise<BalanceModel> {
+  ): Promise<BalanceBaseModel> {
     const balance = await this.repository.findCustomerBalance(input);
     if (!balance) {
       throw new UnprocessableError();
