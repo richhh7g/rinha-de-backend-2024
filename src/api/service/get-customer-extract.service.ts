@@ -1,8 +1,9 @@
 import { Service } from "typedi";
 import { NotFoundError } from "routing-controllers";
 import { BalanceRepository } from "@api/repository";
-import { CustomerTransactionsModel, TransactionBaseModel } from "@api/model";
+import { CustomerBalanceTransactionsModel } from "@api/model";
 import { GetCustomerService } from "./get-customer.service";
+import { mapToCustomerBalanceTransactions } from "./customer-balance-transactions.mapper";
 
 @Service()
 export class GetCustomerExtractService {
@@ -11,7 +12,7 @@ export class GetCustomerExtractService {
     private readonly getCustomerService: GetCustomerService
   ) {}
 
-  async exec(customerId: number): Promise<CustomerTransactionsModel> {
+  async exec(customerId: number): Promise<CustomerBalanceTransactionsModel> {
     const customer = await this.getCustomerService.exec(customerId);
 
     const balanceWithTransactions =
@@ -22,26 +23,6 @@ export class GetCustomerExtractService {
       throw new NotFoundError();
     }
 
-    const balance = balanceWithTransactions.find(
-      (firstBalance) => !!firstBalance && firstBalance
-    );
-
-    const transactions: TransactionBaseModel[] = balanceWithTransactions.map(
-      (transaction) => ({
-        id: transaction.transaction_id,
-        type: transaction.transaction_type,
-        amount: transaction.transaction_amount,
-        createdAt: transaction.transaction_created_at,
-        customerId: transaction.transaction_customer_id,
-        description: transaction.transaction_description,
-      })
-    );
-
-    return {
-      customerId,
-      transactions,
-      limit: balance!.limit,
-      amount: balance!.amount,
-    };
+    return mapToCustomerBalanceTransactions(balanceWithTransactions);
   }
 }

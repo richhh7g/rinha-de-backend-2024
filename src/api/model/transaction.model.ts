@@ -20,6 +20,6 @@ export interface BalanceBaseModel {
   customerId: number;
 }
 
-export interface CustomerTransactionsModel extends BalanceBaseModel {
+export interface CustomerBalanceTransactionsModel extends BalanceBaseModel {
   transactions: TransactionBaseModel[];
 }
