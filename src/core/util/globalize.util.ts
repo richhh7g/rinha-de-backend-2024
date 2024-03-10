@@ -9,7 +9,7 @@ export const Globalize = <GlobalInstance>(
   if (Array.isArray(dependencies)) {
     for (const dependency of dependencies) {
       if (TypeChecker.isDependencyRegister(dependency)) {
-        dependency.register().then();
+        dependency.register();
       }
 
       if (
