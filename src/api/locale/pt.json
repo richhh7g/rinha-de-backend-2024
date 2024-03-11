@@ -1,10 +1,12 @@
 {
   "error": {
-    "not-found": {
-      "empty": "Nada aqui ainda."
+    "server-runner": {
+      "running": "Servidor fechado."
     }
   },
   "success": {
-    "empty": "Nada aqui ainda."
+    "server-runner": {
+      "running": "O servidor está rodando em http://{{ host }}:{{ port }}."
+    }
   }
 }
