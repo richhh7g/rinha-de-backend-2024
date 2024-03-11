@@ -1,15 +1,23 @@
-import * as sqlite3 from "sqlite3";
 import { readFileSync } from "fs";
 import { Service } from "typedi";
 import path from "path";
+import { Pool, PoolClient } from "pg";
 import { DataSourceError } from "@core/error";
+import { LoggerService } from "@core/log";
 import { API_PATH, BASE_PATH, CORE_PATH } from "@core/util";
 
 type SourceType = "main" | "core" | "repository";
 
 @Service()
 export class DatabaseManager {
-  public db: sqlite3.Database | null = null;
+  private pool: Pool;
+
+  constructor(private readonly logger: LoggerService) {
+    this.pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: false,
+    });
+  }
 
   static loadQuery(filePath: string, source: SourceType): string {
     try {
@@ -25,32 +33,6 @@ export class DatabaseManager {
     }
   }
 
-  async connect(databasePath: string): Promise<void> {
-    this.db = sqlite3.cached.Database(
-      databasePath,
-      sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE | sqlite3.OPEN_SHAREDCACHE
-    );
-
-    this.db.configure("busyTimeout", 5);
-
-    this.db.on("open", () => {
-      console.log("Banco de dados SQLite aberto com sucesso.");
-    });
-
-    this.db.on("error", (err) => {
-      console.error("Erro no banco de dados SQLite:", err.message);
-    });
-
-    const isInitialized = await this.checkInitialization();
-    if (!isInitialized) {
-      const initSql = DatabaseManager.loadQuery(
-        "initialize-database.query.sql",
-        "core"
-      );
-      this.db.exec(initSql);
-    }
-  }
-
   private async checkInitialization(): Promise<boolean> {
     try {
       const query = DatabaseManager.loadQuery(
@@ -58,22 +40,9 @@ export class DatabaseManager {
         "core"
       );
 
-      return new Promise<boolean>((resolve, reject) => {
-        if (!this.db) {
-          reject(new DataSourceError("Database is not connected."));
-          return;
-        }
+      const result = await this.query<{ table_name: string }>(query);
 
-        this.db.get<{ name: string }>(query, (err, row) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-
-          const result = row?.name === "customers";
-          resolve(result);
-        });
-      });
+      return result?.table_name === "customers";
     } catch (err) {
       throw new DataSourceError(
         "Erro ao verificar a inicialização do banco de dados."
@@ -81,56 +50,70 @@ export class DatabaseManager {
     }
   }
 
-  async disconnect(): Promise<void> {
-    if (this.db) {
-      this.db.close((err) => {
-        if (err) {
-          console.error("Erro ao fechar o banco de dados SQLite:", err.message);
-          return;
-        }
+  async query<T = any>(queryText: string, params?: any[]): Promise<T | null> {
+    const client: PoolClient = await this.pool.connect();
+    try {
+      const result = await client.query(queryText, params);
 
-        console.log("Banco de dados SQLite fechado com sucesso.");
-      });
-
-      this.db = null;
-    }
-  }
-
-  async query<T = any>(sql: string, ...params: any[]): Promise<T | null> {
-    if (!this.db) {
-      throw new DataSourceError("Database is not connected.");
-    }
-
-    return new Promise<T | null>((resolve, reject) => {
-      this.db?.all<T>(sql, ...params, (err: any, rows: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        if (rows && rows.length > 0) {
-          resolve(rows.length === 1 ? (rows[0] as T) : (rows as T));
-        } else {
-          resolve(null);
-        }
-      });
-    });
-  }
-
-  async execute(sql: string, params?: any[]): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!this.db) {
-        reject(new DataSourceError("Database is not connected."));
-        return;
+      if (result.rows && result.rows.length > 0) {
+        return result.rows.length === 1
+          ? (result.rows[0] as T)
+          : (result.rows as T);
       }
 
-      this.db.run(sql, params, function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+      return null;
+    } catch (err) {
+      throw new Error();
+    } finally {
+      client.release();
+    }
+  }
+
+  async queryTransaction(
+    queries: { query: string; params?: any[] }[]
+  ): Promise<void> {
+    const client: PoolClient = await this.pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      for (const { query, params } of queries) {
+        await client.query(query, params);
+      }
+
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+    } finally {
+      client.release();
+    }
+  }
+
+  async execute(queryText: string, params?: any[]): Promise<void> {
+    const client: PoolClient = await this.pool.connect();
+    try {
+      await client.query(queryText, params);
+    } finally {
+      client.release();
+    }
+  }
+
+  async connect(): Promise<PoolClient> {
+    const connection = await this.pool.connect();
+
+    const isInitialized = await this.checkInitialization();
+    if (!isInitialized) {
+      const initSql = DatabaseManager.loadQuery(
+        "initialize-database.query.sql",
+        "core"
+      );
+      this.execute(initSql);
+    }
+
+    return connection;
+  }
+
+  disconnect() {
+    return this.pool.end();
   }
 }

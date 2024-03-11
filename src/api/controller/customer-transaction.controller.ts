@@ -5,6 +5,7 @@ import {
   CreateCustomerTransactionService,
   GetCustomerExtractService,
 } from "@api/service";
+import { WorkerPool } from "@core/worker";
 import {
   CreateCustomerTransactionBodyDTO,
   CreateCustomerTransactionResponseDTO,
@@ -17,7 +18,8 @@ import { GetCustomerExtractResponseDTO } from "./get-customer-extract.dto";
 export class CustomerTransactionController {
   constructor(
     private readonly getCustomerExtractService: GetCustomerExtractService,
-    private readonly createCustomerTransactionService: CreateCustomerTransactionService
+    private readonly createCustomerTransactionService: CreateCustomerTransactionService,
+    private readonly workerPool: WorkerPool
   ) {}
 
   @Post("/transacoes")
@@ -46,15 +48,17 @@ export class CustomerTransactionController {
   async getCustomerExtract(
     @Param("id") customerId: number
   ): Promise<GetCustomerExtractResponseDTO> {
-    const customerExtract = await this.getCustomerExtractService.exec(customerId);
+    const customerExtract = await this.getCustomerExtractService.exec(
+      customerId
+    );
 
     return {
       saldo: {
         total: customerExtract.amount,
         limite: customerExtract.limit,
-        data_extrato: new Date().toISOString()
+        data_extrato: customerExtract.executionDate,
       },
-      ultimas_transacoes: customerExtract.transactions.map(transaction => ({
+      ultimas_transacoes: customerExtract.transactions.map((transaction) => ({
         tipo: transaction.type,
         valor: transaction.amount,
         descricao: transaction.description,

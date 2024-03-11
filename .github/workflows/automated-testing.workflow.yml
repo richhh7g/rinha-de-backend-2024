@@ -23,5 +23,7 @@ jobs:
         run: npm ci
       - name: Build server
         run: npm run build
+      - name: Setting database
+        run: npm run compose:test
       - name: Running tests
         run: npm run test

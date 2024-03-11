@@ -1,1 +1,1 @@
-SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'customers';
+SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'customers';

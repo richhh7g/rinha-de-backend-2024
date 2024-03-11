@@ -28,14 +28,28 @@ export class TransactionRepository {
       "repository"
     );
 
+    const updateCustomerBalanceQuery = DatabaseManager.loadQuery(
+      "update-customer-balance.query.sql",
+      "repository"
+    );
+
     const createdAt = Date.now();
 
-    this.database.execute(createTransactionQuery, [
-      params.customerId,
-      params.type,
-      params.amount,
-      params.description,
-      createdAt,
+    await this.database.queryTransaction([
+      {
+        query: createTransactionQuery,
+        params: [
+          params.customerId,
+          params.type,
+          params.amount,
+          params.description,
+          createdAt,
+        ],
+      },
+      {
+        query: updateCustomerBalanceQuery,
+        params: [params.customerId],
+      },
     ]);
   }
 }

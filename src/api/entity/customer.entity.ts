@@ -6,6 +6,7 @@ export class CustomerEntity {
 }
 
 export type CustomerBalanceWithTransactionsEntity = BalanceEntity & {
+  execution_date: string;
   transaction_id: number;
   transaction_type: string;
   transaction_amount: number;
