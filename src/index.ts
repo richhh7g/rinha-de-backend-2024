@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import "@app/config/env.config";
-import { ActionType, customActions, getCurrentAction } from "./action-strategy";
+import "@core/env/env.config";
+import { ActionType, customActions, getCurrentAction } from "@core/runner";
 
 void customActions(ActionType[getCurrentAction]);

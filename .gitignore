@@ -4,3 +4,7 @@ node_modules/
 
 # Files
 .env
+.docker/asset/database.db
+
+# Exclude database
+src/test/test-database.db
