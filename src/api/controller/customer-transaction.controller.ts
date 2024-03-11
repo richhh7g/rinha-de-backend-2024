@@ -5,7 +5,6 @@ import {
   CreateCustomerTransactionService,
   GetCustomerExtractService,
 } from "@api/service";
-import { WorkerPool } from "@core/worker";
 import {
   CreateCustomerTransactionBodyDTO,
   CreateCustomerTransactionResponseDTO,
@@ -18,8 +17,7 @@ import { GetCustomerExtractResponseDTO } from "./get-customer-extract.dto";
 export class CustomerTransactionController {
   constructor(
     private readonly getCustomerExtractService: GetCustomerExtractService,
-    private readonly createCustomerTransactionService: CreateCustomerTransactionService,
-    private readonly workerPool: WorkerPool
+    private readonly createCustomerTransactionService: CreateCustomerTransactionService
   ) {}
 
   @Post("/transacoes")
