@@ -17,7 +17,7 @@
     "copy-sql-files": "copyup 'src/core/db/sql/**' 'src/api/repository/sql/**' 'dist/'",
     "compose:dev": "docker compose -f .docker/compose/development-setup.yml up --build --force-recreate",
     "compose:prod": "docker compose -f .docker/compose/production-setup.yml up --build --force-recreate",
-    "compose:test": "docker compose -f .docker/compose/testing-database.yml up",
+    "compose:test": "docker compose -f .docker/compose/testing-database.yml up -d",
     "compose:stats": "docker stats"
   },
   "keywords": [],
