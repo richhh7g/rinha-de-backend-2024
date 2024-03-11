@@ -2,12 +2,7 @@ import { LogMethod } from "winston";
 
 export enum ApplicationLayer {
   Core = "Core",
-  Runner = "Runner",
-  Entity = "Entity",
-  Config = "Config",
-  Service = "Service",
-  Repository = "Service",
-  Controller = "Controller",
+  Api = "Api",
 }
 
 export interface LoggingDriver {
@@ -15,9 +10,9 @@ export interface LoggingDriver {
 }
 
 export interface BaseLogParams {
-  uuid: string;
+  uuid?: string;
   className?: string;
-  method: string;
+  method?: string;
   layer: ApplicationLayer;
   [key: string]: any;
 }
