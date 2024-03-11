@@ -20,6 +20,8 @@
     "paths": {
       "@app": ["."],
       "@app/*": ["./*"],
+      "@api": ["api/"],
+      "@api/*": ["api/*"],
       "@core": ["core/"],
       "@core/*": ["core/*"],
       "@test": ["test/"],

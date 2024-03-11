@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import { LOGGER_DRIVER_TOKEN } from "./logger-service.ioc";
+import { LOGGER_DRIVER_TOKEN } from "@core/ioc";
 import {
   LoggingDriver,
   Logger,
@@ -19,12 +19,10 @@ export class LoggerService implements Logger {
     payload: string | LogParams | LogErrorParams,
     ...additionalParams: any[]
   ): void {
-    this.logger.log("info", "ilaaa");
     if (typeof payload === "string") {
       this.logger?.log({
         level,
         message: payload + additionalParams?.join(" "),
-        ...context,
       });
     } else {
       const { error, ...additionalInfo } = payload;
@@ -33,7 +31,6 @@ export class LoggerService implements Logger {
         message: error || this.composeLogMessage(additionalInfo),
         ...additionalInfo,
         ...additionalParams,
-        ...context,
       });
     }
   }

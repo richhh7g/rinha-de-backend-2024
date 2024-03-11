@@ -1,0 +1,10 @@
+{
+  "error": {
+    "not-found": {
+      "empty": "Nada aqui ainda."
+    }
+  },
+  "success": {
+    "empty": "Nada aqui ainda."
+  }
+}
