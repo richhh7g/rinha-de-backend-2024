@@ -1,9 +1,11 @@
 import e from "express";
-import { RunnerType } from "node-runner-ts";
 import { getServers } from "node:dns";
+import { RunnerType } from "node-runner-ts";
 import Container, { Service } from "typedi";
-import { ServerConfig } from "@core/server-config";
+import { localization } from "@core/localization";
 import { DatabaseManager } from "@core/db";
+import { logger } from "@core/log";
+import { ServerConfig } from "@core/server-config";
 
 @Service()
 export default class ServerRunner implements RunnerType {
@@ -22,7 +24,12 @@ export default class ServerRunner implements RunnerType {
     const PORT = process.env.APP_PORT;
 
     const server = this.server.listen(PORT, () => {
-      console.log(`Server is running on port http://${getServers()}:${PORT}`);
+      logger.info(
+        localization.translate("success.server-runner.running", {
+          host: getServers(),
+          port: PORT,
+        })
+      );
     });
 
     const db = Container.get(DatabaseManager);
@@ -31,7 +38,7 @@ export default class ServerRunner implements RunnerType {
       server.close(async () => {
         await db.disconnect();
 
-        console.log("Closed server");
+        logger.error(localization.translate("error.server-runner.running"));
       });
     });
 
@@ -39,7 +46,7 @@ export default class ServerRunner implements RunnerType {
       server.close(async () => {
         await db.disconnect();
 
-        console.log("Closed server");
+        logger.error(localization.translate("error.server-runner.running"));
       });
     });
   }
