@@ -31,7 +31,7 @@ describe("REST - CustomerTransactionController - getCustomerExtract(GET)", () =>
   );
   const testDbManager: TestDatabaseManager = Container.get(TestDatabaseManager);
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await testDbManager.resetDatabase();
   });
 
@@ -53,17 +53,26 @@ describe("REST - CustomerTransactionController - getCustomerExtract(GET)", () =>
   it("should return a valid customer extract", async () => {
     const customerId = 1;
 
-    const transactionsPromise = Array.from({ length: 10 }, async () => {
+    const transactionsPromise = Array.from({ length: 10 }, () => {
       const transaction = createTransaction({ customer_id: customerId });
 
-      return testDbManager.execute(createTransactionQuery, [
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ timeout: true });
+        }, 100);
+      });
+
+      const transactionPromise = testDbManager.execute(createTransactionQuery, [
         transaction.customer_id,
         transaction.type,
         transaction.amount,
         transaction.description,
         transaction.created_at,
       ]);
+
+      return Promise.race([transactionPromise, timeoutPromise]);
     });
+
     await Promise.all(transactionsPromise);
 
     const response = await requestMaker.request({

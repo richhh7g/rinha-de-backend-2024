@@ -30,8 +30,6 @@ export class CreateCustomerTransactionService {
       customerId: customer.id,
     };
 
-    await this.getCustomerBalanceService.exec(commonBalance);
-
     await this.transactionRepository.createTransaction({
       type,
       amount,

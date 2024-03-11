@@ -19,8 +19,23 @@ export class GetCustomerExtractService {
       await this.balanceRepository.findCustomerBalanceWithTransactions(
         customer.id
       );
+
     if (!balanceWithTransactions) {
-      throw new NotFoundError();
+      const balance = await this.balanceRepository.findCustomerBalance(
+        customer.id
+      );
+
+      if (!balance) {
+        throw new NotFoundError("Customer balance not found");
+      }
+
+      return {
+        customerId,
+        limit: balance.limit,
+        amount: balance.amount,
+        transactions: [],
+        executionDate: new Date().toISOString(),
+      };
     }
 
     return mapToCustomerBalanceTransactions(balanceWithTransactions);

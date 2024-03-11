@@ -11,6 +11,7 @@ export const mapToCustomerBalanceTransactions = (
     amount,
     limit,
     customer_id: customerId,
+    execution_date: executionDate,
   } = balanceWithTransactions.find(Boolean)!;
 
   const transactions: TransactionBaseModel[] = balanceWithTransactions.map(
@@ -18,7 +19,7 @@ export const mapToCustomerBalanceTransactions = (
       id: transaction.transaction_id,
       type: transaction.transaction_type,
       amount: transaction.transaction_amount,
-      createdAt: transaction.transaction_created_at,
+      createdAt: Number(transaction.transaction_created_at),
       customerId: transaction.transaction_customer_id,
       description: transaction.transaction_description,
     })
@@ -29,5 +30,6 @@ export const mapToCustomerBalanceTransactions = (
     amount,
     customerId,
     transactions,
+    executionDate,
   };
 };

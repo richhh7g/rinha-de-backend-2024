@@ -15,8 +15,10 @@
     "start": "ENV=.env node -r ./tsconfig.paths.js dist/index.js",
     "test": "ENV=.env.test mocha -r ts-node/register -r tsconfig-paths/register --colors --delay src/index.ts --exit",
     "copy-sql-files": "copyup 'src/core/db/sql/**' 'src/api/repository/sql/**' 'dist/'",
-    "compose:test": "docker compose -f .docker/compose/compose-test.yml up --build --force-recreate",
-    "docker:stats": "docker stats"
+    "compose:dev": "docker compose -f .docker/compose/development-setup.yml up --build --force-recreate",
+    "compose:prod": "docker compose -f .docker/compose/production-setup.yml up --build --force-recreate",
+    "compose:test": "docker compose -f .docker/compose/testing-database.yml up -d",
+    "compose:stats": "docker stats"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +34,7 @@
     "helmet": "7.1.0",
     "i18next": "23.10.0",
     "node-runner-ts": "0.5.0",
+    "pg": "8.11.3",
     "reflect-metadata": "0.2.1",
     "routing-controllers": "0.10.4",
     "sqlite3": "5.1.7",
@@ -47,6 +50,7 @@
     "@types/i18n": "0.13.10",
     "@types/mocha": "10.0.6",
     "@types/node": "20.11.20",
+    "@types/pg": "8.11.2",
     "@types/sqlite3": "3.1.11",
     "axios": "1.6.7",
     "chai": "4.4.1",

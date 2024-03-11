@@ -46,15 +46,17 @@ export class CustomerTransactionController {
   async getCustomerExtract(
     @Param("id") customerId: number
   ): Promise<GetCustomerExtractResponseDTO> {
-    const customerExtract = await this.getCustomerExtractService.exec(customerId);
+    const customerExtract = await this.getCustomerExtractService.exec(
+      customerId
+    );
 
     return {
       saldo: {
         total: customerExtract.amount,
         limite: customerExtract.limit,
-        data_extrato: new Date().toISOString()
+        data_extrato: customerExtract.executionDate,
       },
-      ultimas_transacoes: customerExtract.transactions.map(transaction => ({
+      ultimas_transacoes: customerExtract.transactions.map((transaction) => ({
         tipo: transaction.type,
         valor: transaction.amount,
         descricao: transaction.description,

@@ -21,5 +21,6 @@ export interface BalanceBaseModel {
 }
 
 export interface CustomerBalanceTransactionsModel extends BalanceBaseModel {
+  executionDate: string;
   transactions: TransactionBaseModel[];
 }

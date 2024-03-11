@@ -35,11 +35,11 @@ export const checkCustomerExtract = (
 ) => {
   const customerTransactions = mapToCustomerBalanceTransactions(expected);
 
-  expect(atual).to.deep.equal({
+  const expectedObject = {
     saldo: {
       total: customerTransactions.amount,
       limite: customerTransactions.limit,
-      data_extrato: atual.saldo.data_extrato,
+      data_extrato: "",
     },
     ultimas_transacoes: customerTransactions.transactions.map(
       (transaction) => ({
@@ -49,5 +49,10 @@ export const checkCustomerExtract = (
         realizada_em: new Date(transaction.createdAt).toISOString(),
       })
     ),
-  });
+  };
+
+  atual.saldo.data_extrato = "";
+  expectedObject.saldo.data_extrato = "";
+
+  expect(atual).to.deep.equal(expectedObject);
 };

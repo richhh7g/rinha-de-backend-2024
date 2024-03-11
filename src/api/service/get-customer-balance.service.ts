@@ -13,7 +13,7 @@ export class GetCustomerBalanceService {
   async exec(
     input: GetCustomerBalanceServiceInputModel
   ): Promise<BalanceBaseModel> {
-    const balance = await this.repository.findCustomerBalance(input);
+    const balance = await this.repository.findCustomerBalanceWithLimit(input);
     if (!balance) {
       throw new UnprocessableError();
     }

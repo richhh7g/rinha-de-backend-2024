@@ -29,7 +29,7 @@ describe("REST - CustomerTransactionController - createCustomerTransaction(POST)
   >("/customers");
   const testDbManager: TestDatabaseManager = Container.get(TestDatabaseManager);
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await testDbManager.resetDatabase();
   });
 

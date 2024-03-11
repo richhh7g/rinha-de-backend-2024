@@ -1,4 +1,5 @@
-import { config } from "dotenv";
+import { DotenvPopulateInput, config } from "dotenv";
+import { existsSync } from "fs";
 import { ConfigureType } from "node-runner-ts";
 import path from "path";
 import Container, { Service } from "typedi";
@@ -10,9 +11,23 @@ export class EnvConfig implements ConfigureType {
   async configure() {
     const envFilePath = path.resolve(__dirname, "..", "..", "..", ENV_FILE);
 
-    config({
-      path: envFilePath,
-    });
+    let envConfig: DotenvPopulateInput;
+
+    if (existsSync(envFilePath)) {
+      envConfig = {
+        path: envFilePath,
+      };
+    } else {
+      envConfig = {};
+      for (const key in process.env) {
+        const value = process.env[key];
+        if (typeof value === "string") {
+          envConfig[key] = value;
+        }
+      }
+    }
+
+    config(envConfig);
   }
 }
 
